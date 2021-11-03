@@ -52,6 +52,8 @@
 #include <stdint.h>
 #include "nrf_delay.h"
 #include "boards.h"
+#include "pca10059.h"
+#include "sdk_config.h"
 
 /**
  * @brief Function for application main entry.
@@ -66,8 +68,37 @@ int main(void)
     {
         for (int i = 0; i < LEDS_NUMBER; i++)
         {
-            bsp_board_led_invert(i);
-            nrf_delay_ms(500);
+            switch (i)
+            {
+            case LED_IDX_0:
+                for (int j = 0; j < COUNT_BLINK_FIRST_LED; j++)
+                {
+                    bsp_board_led_invert(0);
+                    nrf_delay_ms(500);
+                }
+                break;
+            case LED_IDX_1:
+                for (int j = 0; j < COUNT_BLINK_SECOND_LED; j++)
+                {
+                    bsp_board_led_invert(1);
+                    nrf_delay_ms(500);
+                }
+                break;
+            case LED_IDX_2:
+                for (int j = 0; j < COUNT_BLINK_THIRD_LED; j++)
+                {
+                    bsp_board_led_invert(2);
+                    nrf_delay_ms(500);
+                }
+                break;
+            case LED_IDX_3:
+                for (int j = 0; j < COUNT_BLINK_FOURTH_LED; j++)
+                {
+                    bsp_board_led_invert(3);
+                    nrf_delay_ms(500);
+                }
+                break;
+            }
         }
     }
 }
