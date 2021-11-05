@@ -4,6 +4,7 @@ OUTPUT_DIRECTORY := _build
 
 SDK_ROOT := ../ESTC-NSDK/
 PROJ_DIR := ./
+MODULES_DIR := modules/
 
 $(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
   LINKER_SCRIPT  := blinky_gcc_nrf52.ld
@@ -29,6 +30,10 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
   $(PROJ_DIR)/main.c \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
+  $(SDK_ROOT)/components/boards/boards.c \
+  $(MODULES_DIR)/gpio/gpio.c \
+  $(MODULES_DIR)/gpio/button.c \
+  $(MODULES_DIR)/gpio/led.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -55,6 +60,8 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/memobj \
   $(SDK_ROOT)/external/fprintf \
   $(SDK_ROOT)/components/libraries/log/src \
+  $(SDK_ROOT)/external/fatfs/src \
+  $(MODULES_DIR)/gpio \
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -132,7 +139,7 @@ include $(TEMPLATE_PATH)/Makefile.common
 
 $(foreach target, $(TARGETS), $(call define_target, $(target)))
 
-.PHONY: flash
+.PHONY: flash clean
 
 # Flash the program
 DFU_PORT ?= /dev/ttyACM0
@@ -150,3 +157,6 @@ flash: default
 	nrfutil dfu usb-serial \
 	    --package $(OUTPUT_DIRECTORY)/app.zip \
 	    --port $(DFU_PORT)
+
+clean:
+	rm -r _build/
