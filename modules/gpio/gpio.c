@@ -138,3 +138,15 @@ void __nrf_gpio_port_out_set(NRF_GPIO_Type * p_reg, uint32_t set_mask)
 {
     p_reg->OUTSET = set_mask;
 }
+
+uint32_t __nrf_gpio_pin_read(uint32_t pin_number)
+{
+    NRF_GPIO_Type * reg = nrf_gpio_pin_port_decode(&pin_number);
+
+    return ((__nrf_gpio_port_in_read(reg) >> pin_number) & 1UL);
+}
+
+uint32_t __nrf_gpio_port_in_read(NRF_GPIO_Type const * p_reg)
+{
+    return p_reg->IN;
+}

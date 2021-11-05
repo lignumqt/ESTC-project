@@ -17,6 +17,8 @@
 #define LED_3          LED2_G
 #define LED_4          LED2_B
 
+#define led_seq {LED_2_R_IDX_1, LED_2_R_IDX_1, LED_1_G_IDX_0, LED_1_G_IDX_0, LED_1_G_IDX_0, LED_2_B_IDX_3}
+
 #define LEDS_ACTIVE_STATE 0
 
 #define LEDS_LIST { LED_1, LED_2, LED_3, LED_4 }

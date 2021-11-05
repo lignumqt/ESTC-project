@@ -39,10 +39,10 @@
  */
 
 #ifndef LED_IDX
-#define LED_IDX_0 (0)
-#define LED_IDX_1 (1)
-#define LED_IDX_2 (2)
-#define LED_IDX_3 (3)
+#define LED_1_G_IDX_0 (0)
+#define LED_2_R_IDX_1 (1)
+#define LED_2_G_IDX_2 (2)
+#define LED_2_B_IDX_3 (3)
 #define COUNT_BLINK_FIRST_LED (12)
 #define COUNT_BLINK_SECOND_LED (12)
 #define COUNT_BLINK_THIRD_LED (0)

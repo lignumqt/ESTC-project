@@ -17,5 +17,7 @@ void __nrf_gpio_port_out_clear(NRF_GPIO_Type * p_reg, uint32_t clr_mask);
 void __nrf_gpio_pin_set(uint32_t pin_number);
 void __nrf_gpio_port_out_set(NRF_GPIO_Type * p_reg, uint32_t set_mask);
 void __gpio_output_voltage_setup(void);
+uint32_t __nrf_gpio_pin_read(uint32_t pin_number);
+uint32_t __nrf_gpio_port_in_read(NRF_GPIO_Type const * p_reg);
 
 #endif //GPIO_H
