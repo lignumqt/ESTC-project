@@ -9,6 +9,17 @@ void led_toogle_by_idx(uint32_t led_idx)
     nrf_gpio_pin_toggle(m_board_led_list[led_idx]);
 }
 
+void led_blink_by_idx(uint32_t led_idx)
+{
+    ASSERT(led_idx < LEDS_NUMBER);
+
+    for (int i = 0; i < 2; i++)
+    {
+        nrf_gpio_pin_toggle(m_board_led_list[led_idx]);
+        nrf_delay_ms(500);
+    }
+}
+
 void led_on_by_idx(uint32_t led_idx)
 {
     ASSERT(led_idx < LEDS_NUMBER);

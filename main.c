@@ -1,7 +1,5 @@
-
 #include <stdbool.h>
 #include <stdint.h>
-#include "nrf_delay.h"
 #include "boards.h"
 #include "pca10059.h"
 #include "sdk_config.h"
@@ -14,44 +12,23 @@
  */
 int main(void)
 {
+    static const uint8_t leds_seq[] = led_seq_count_blink;
+
     /* Configure board. */
-    board_init(BSP_INIT_LEDS);
+    board_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS);
 
     /* Toggle LEDs. */
     while (true)
     {
-        for (int i = 0; i < LEDS_NUMBER; i++)
+        for (int j = 0; j < LEDS_NUMBER; j++)
         {
-            switch (i)
+            while (nrf_gpio_pin_read(BUTTON_1) == BTN_RELEASED) {}
+
+            for (int i = 0; i < leds_seq[j]; i++)
             {
-            case LED_IDX_0:
-                for (int j = 0; j < COUNT_BLINK_FIRST_LED; j++)
-                {
-                    led_toogle_by_idx(LED_IDX_0);
-                    nrf_delay_ms(500);
-                }
-                break;
-            case LED_IDX_1:
-                for (int j = 0; j < COUNT_BLINK_SECOND_LED; j++)
-                {
-                    led_toogle_by_idx(LED_IDX_1);
-                    nrf_delay_ms(500);
-                }
-                break;
-            case LED_IDX_2:
-                for (int j = 0; j < 2; j++)
-                {
-                    led_toogle_by_idx(LED_IDX_2);
-                    nrf_delay_ms(500);
-                }
-                break;
-            case LED_IDX_3:
-                for (int j = 0; j < COUNT_BLINK_FOURTH_LED; j++)
-                {
-                    led_toogle_by_idx(LED_IDX_3);
-                    nrf_delay_ms(500);
-                }
-                break;
+                led_blink_by_idx(j);
+
+                while (nrf_gpio_pin_read(BUTTON_1) == BTN_RELEASED) {}
             }
         }
     }

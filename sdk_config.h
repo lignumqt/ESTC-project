@@ -38,17 +38,6 @@
  *
  */
 
-#ifndef LED_IDX
-#define LED_IDX_0 (0)
-#define LED_IDX_1 (1)
-#define LED_IDX_2 (2)
-#define LED_IDX_3 (3)
-#define COUNT_BLINK_FIRST_LED (12)
-#define COUNT_BLINK_SECOND_LED (12)
-#define COUNT_BLINK_THIRD_LED (0)
-#define COUNT_BLINK_FOURTH_LED (16)
-#endif
-
 #ifndef SDK_CONFIG_H
 #define SDK_CONFIG_H
 // <<< Use Configuration Wizard in Context Menu >>>\n

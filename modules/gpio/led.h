@@ -17,6 +17,8 @@
 #define LED_3          LED2_G
 #define LED_4          LED2_B
 
+#define led_seq_count_blink {6, 6, 0, 8}
+
 #define LEDS_ACTIVE_STATE 0
 #define LEDS_INACTIVE_STATE 1
 
@@ -27,6 +29,7 @@ static const uint8_t m_board_led_list[LEDS_NUMBER] = LEDS_LIST;
 #endif //LEDS_NUMBER
 
 void led_toogle_by_idx(uint32_t led_idx);
+void led_blink_by_idx(uint32_t led_idx);
 void led_on_by_idx(uint32_t led_idx);
 void led_off_by_idx(uint32_t led_idx);
 void board_leds_init(void);
