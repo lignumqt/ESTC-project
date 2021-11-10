@@ -42,3 +42,26 @@ void board_leds_init(void)
         led_off_by_idx(i);
     }
 }
+
+void led_toogle_by_sequence()
+{
+    static uint16_t led_last = 0;
+    static uint16_t led_last_position = 0;
+    static const uint8_t leds_seq[] = led_seq_count_blink;
+
+    if (led_last_position >= leds_seq[led_last])
+    {
+        led_last_position = 0;
+        led_last++;
+
+        if (led_last >= LEDS_NUMBER)
+            led_last = 0;
+
+        return;
+    }
+
+    led_blink_by_idx(led_last);
+    led_last_position++;
+
+    return;
+}

@@ -33,5 +33,6 @@ void led_blink_by_idx(uint32_t led_idx);
 void led_on_by_idx(uint32_t led_idx);
 void led_off_by_idx(uint32_t led_idx);
 void board_leds_init(void);
+void led_toogle_by_sequence();
 
 #endif //LED_H
