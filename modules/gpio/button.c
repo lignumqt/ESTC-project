@@ -12,10 +12,10 @@ void board_buttons_init(void)
     }
 }
 
-void if_button_press_check(button_action_cb callback)
+void if_button_press_check(button_action_cb callback, void *data)
 {
     if (nrf_gpio_pin_read(BUTTON_1) == BTN_PRESSED)
     {
-        callback();
+        callback(data);
     }
 }
