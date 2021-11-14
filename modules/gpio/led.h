@@ -46,5 +46,8 @@ void led_on_by_idx(uint32_t led_idx);
 void led_off_by_idx(uint32_t led_idx);
 void board_leds_init(void);
 void led_toogle_by_sequence(void *tmr_id);
+bool smooth_flashing_led(bool brighter, int led_idx);
+void led_toogle_smooth_by_seq();
+void init_systick_timer();
 
 #endif //LED_H

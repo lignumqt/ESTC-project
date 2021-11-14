@@ -7,6 +7,8 @@
 #include "led.h"
 #include "button.h"
 
+#include "nrfx_systick.h"
+
 APP_TIMER_DEF(led_off_tmr);
 APP_TIMER_DEF(led_can_be_toogle_tmr);
 
@@ -48,6 +50,7 @@ int main(void)
 {
     logs_init();
     board_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS);
+    init_systick_timer();
 
     ret_code_t err_code = app_timer_init();
     APP_ERROR_CHECK(err_code);
@@ -60,7 +63,8 @@ int main(void)
 
     while (true)
     {
-        if_button_press_check(led_toogle_by_sequence, (void *) led_off_tmr);
+        if_button_press_check(led_toogle_smooth_by_seq, NULL);
+
         LOG_BACKEND_USB_PROCESS();
         NRF_LOG_PROCESS();
     }

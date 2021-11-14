@@ -3,6 +3,9 @@
 #include "led.h"
 #include "gpio.h"
 
+static nrfx_systick_state_t t_on = { 0 };
+static nrfx_systick_state_t t_off = { 0 };
+
 void led_toogle_by_idx(uint32_t led_idx)
 {
     ASSERT(led_idx < LEDS_NUMBER);
@@ -73,4 +76,90 @@ void led_toogle_by_sequence(void *tmr_id)
     led_last_position++;
 
     return;
+}
+
+void led_toogle_smooth_by_seq()
+{
+    static bool brighter = true;
+    static bool old_brighter = true;
+    static uint16_t led_last = 0;
+    static uint16_t led_last_position = 0;
+    static const uint8_t leds_seq[] = led_seq_count_blink;
+
+    if (led_last_position >= leds_seq[led_last] * 2)
+    {
+        led_last_position = 0;
+        led_off_by_idx(led_last);
+        led_last++;
+
+        if (led_last >= LEDS_NUMBER)
+            led_last = 0;
+
+        return;
+    }
+
+    brighter = smooth_flashing_led(brighter, led_last);
+
+    if (old_brighter != brighter)
+    {
+        old_brighter = brighter;
+        led_last_position++;
+    }
+}
+
+bool smooth_flashing_led(bool brighter, int led_idx)
+{
+    static int start = 0;
+    static int stop = TIMEOUT_PWM;
+    static int get_t_off = 0;
+    static int led_state = 0;
+
+    if (nrfx_systick_test(&t_on, start))
+    {
+        if (!led_state)
+        {
+            led_off_by_idx(led_idx);
+            led_state = 1;
+        }
+
+        if (!get_t_off)
+        {
+            nrfx_systick_get(&t_off);
+            get_t_off = 1;
+        }
+
+        if (nrfx_systick_test(&t_off, stop))
+        {
+            led_on_by_idx(led_idx);
+            led_state = 0;
+            nrfx_systick_get(&t_on);
+
+            if (brighter)
+            {
+                start++;
+                stop--;
+            }
+            else
+            {
+                start--;
+                stop++;
+            }
+
+            if (((start == 0) && (stop == TIMEOUT_PWM) && !brighter) ||
+                ((start == TIMEOUT_PWM) && (stop == 0) && brighter))
+            {
+                brighter = !brighter;
+            }
+
+            get_t_off = 0;
+        }
+    }
+
+    return brighter;
+}
+
+void init_systick_timer()
+{
+    nrfx_systick_init();
+    nrfx_systick_get(&t_on);
 }
