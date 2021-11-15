@@ -7,33 +7,61 @@
 #include "led.h"
 #include "button.h"
 
-/**
- * @brief Function for application main entry.
- */
-int main(void)
+APP_TIMER_DEF(led_off_tmr);
+APP_TIMER_DEF(led_can_be_toogle_tmr);
+
+int led_can_be_toogle = 1;
+
+static void logs_init()
 {
-    static const uint8_t leds_seq[] = led_seq_count_blink;
+    ret_code_t ret = NRF_LOG_INIT(NULL);
+    APP_ERROR_CHECK(ret);
 
-    /* Configure board. */
-    board_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS);
-
-    /* Toggle LEDs. */
-    while (true)
-    {
-        for (int j = 0; j < LEDS_NUMBER; j++)
-        {
-            while (nrf_gpio_pin_read(BUTTON_1) == BTN_RELEASED) {}
-
-            for (int i = 0; i < leds_seq[j]; i++)
-            {
-                led_blink_by_idx(j);
-
-                while (nrf_gpio_pin_read(BUTTON_1) == BTN_RELEASED) {}
-            }
-        }
-    }
+    NRF_LOG_DEFAULT_BACKENDS_INIT();
 }
 
-/**
- *@}
- **/
+static void led_can_be_toogle_timer_handler(void *p_context)
+{
+    ret_code_t err_code = 0;
+    led_can_be_toogle = 1;
+
+    err_code = app_timer_stop(led_can_be_toogle_tmr);
+    APP_ERROR_CHECK(err_code);
+}
+
+static void led_off_timer_handler(void *p_context)
+{
+    ret_code_t err_code = 0;
+    uint16_t *led_idx = (uint16_t *)p_context;
+
+    led_off_by_idx(*led_idx);
+    NRF_LOG_INFO("Led '%s' turn off", leds_idx_to_string_t[*led_idx].led_string);
+
+    err_code = app_timer_stop(led_off_tmr);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_start(led_can_be_toogle_tmr, LEDS_TIMEOUT_TOGGLE, NULL);
+    APP_ERROR_CHECK(err_code);
+}
+
+int main(void)
+{
+    logs_init();
+    board_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS);
+
+    ret_code_t err_code = app_timer_init();
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_create(&led_off_tmr, APP_TIMER_MODE_REPEATED, led_off_timer_handler);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_create(&led_can_be_toogle_tmr, APP_TIMER_MODE_REPEATED, led_can_be_toogle_timer_handler);
+    APP_ERROR_CHECK(err_code);
+
+    while (true)
+    {
+        if_button_press_check(led_toogle_by_sequence, (void *) led_off_tmr);
+        LOG_BACKEND_USB_PROCESS();
+        NRF_LOG_PROCESS();
+    }
+}

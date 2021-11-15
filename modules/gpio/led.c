@@ -42,3 +42,35 @@ void board_leds_init(void)
         led_off_by_idx(i);
     }
 }
+
+void led_toogle_by_sequence(void *tmr_id)
+{
+    static uint16_t led_last = 0;
+    static uint16_t led_last_position = 0;
+    static const uint8_t leds_seq[] = led_seq_count_blink;
+
+    if (!led_can_be_toogle)
+        return;
+
+    if (led_last_position >= leds_seq[led_last])
+    {
+        led_last_position = 0;
+        led_last++;
+
+        if (led_last >= LEDS_NUMBER)
+            led_last = 0;
+
+        return;
+    }
+
+    led_on_by_idx(led_last);
+    NRF_LOG_INFO("Led '%s' turn on", leds_idx_to_string_t[led_last].led_string);
+
+    led_can_be_toogle = 0;
+    app_timer_start(tmr_id, LEDS_TIMEOUT_TOGGLE, (void *)&led_last);
+    NRF_LOG_INFO("Timer start");
+
+    led_last_position++;
+
+    return;
+}
