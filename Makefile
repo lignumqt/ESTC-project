@@ -61,10 +61,11 @@ SRC_FILES += \
   $(SDK_ROOT)/external/fprintf/nrf_fprintf.c \
   $(SDK_ROOT)/external/fprintf/nrf_fprintf_format.c \
   $(SDK_ROOT)/external/utf_converter/utf.c \
-  $(PROJ_DIR)/main.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_systick.c \
   $(MODULES_DIR)/gpio/gpio.c \
   $(MODULES_DIR)/gpio/button.c \
   $(MODULES_DIR)/gpio/led.c \
+  $(PROJ_DIR)/main.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
