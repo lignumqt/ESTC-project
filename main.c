@@ -46,12 +46,8 @@ static void led_off_timer_handler(void *p_context)
     APP_ERROR_CHECK(err_code);
 }
 
-int main(void)
+static void init_timer_led()
 {
-    logs_init();
-    board_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS);
-    init_systick_timer();
-
     ret_code_t err_code = app_timer_init();
     APP_ERROR_CHECK(err_code);
 
@@ -60,6 +56,14 @@ int main(void)
 
     err_code = app_timer_create(&led_can_be_toogle_tmr, APP_TIMER_MODE_REPEATED, led_can_be_toogle_timer_handler);
     APP_ERROR_CHECK(err_code);
+}
+
+int main(void)
+{
+    logs_init();
+    board_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS);
+    init_timer_led();
+    init_systick_timer();
 
     while (true)
     {
