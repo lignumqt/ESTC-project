@@ -44,10 +44,12 @@ void led_toogle_by_idx(uint32_t led_idx);
 void led_blink_by_idx(uint32_t led_idx);
 void led_on_by_idx(uint32_t led_idx);
 void led_off_by_idx(uint32_t led_idx);
-void board_leds_init(void);
+void led_board_init(void);
 void led_toogle_by_sequence(void *tmr_id);
-bool smooth_flashing_led(bool brighter, int led_idx);
+bool led_smooth_flashing(bool brighter, int led_idx, bool stuck_flashing);
 void led_toogle_smooth_by_seq();
-void init_systick_timer();
+void led_init_systick_timer();
+void led_init_timer();
+void led_stuck_flashing_timer_handler(void *p_context);
 
 #endif //LED_H
