@@ -5,6 +5,10 @@
 
 static nrfx_systick_state_t t_on = { 0 };
 static nrfx_systick_state_t t_off = { 0 };
+APP_TIMER_DEF(led_off_tmr);
+APP_TIMER_DEF(led_can_be_toogle_tmr);
+
+int led_can_be_toogle = 1;
 
 void led_toogle_by_idx(uint32_t led_idx)
 {
@@ -35,7 +39,7 @@ void led_off_by_idx(uint32_t led_idx)
     nrf_gpio_pin_write(m_board_led_list[led_idx], LEDS_INACTIVE_STATE);
 }
 
-void board_leds_init(void)
+void led_board_init(void)
 {
     uint32_t i;
 
@@ -98,7 +102,10 @@ void led_toogle_smooth_by_seq()
         return;
     }
 
-    brighter = smooth_flashing_led(brighter, led_last);
+    if (button_get_was_double_click())
+        brighter = led_smooth_flashing(brighter, led_last, false);
+    else
+        brighter = led_smooth_flashing(brighter, led_last, true);
 
     if (old_brighter != brighter)
     {
@@ -107,12 +114,41 @@ void led_toogle_smooth_by_seq()
     }
 }
 
-bool smooth_flashing_led(bool brighter, int led_idx)
+bool led_smooth_flashing(bool brighter, int led_idx, bool stuck_flashing)
 {
     static int start = 0;
     static int stop = TIMEOUT_PWM;
     static int get_t_off = 0;
     static int led_state = 0;
+
+    if (stuck_flashing)
+    {
+        if (nrfx_systick_test(&t_on, start))
+        {
+            if (!led_state)
+            {
+                led_off_by_idx(led_idx);
+                led_state = 1;
+            }
+
+            if (!get_t_off)
+            {
+                nrfx_systick_get(&t_off);
+                get_t_off = 1;
+            }
+
+            if (nrfx_systick_test(&t_off, stop))
+            {
+                led_on_by_idx(led_idx);
+                led_state = 0;
+                nrfx_systick_get(&t_on);
+
+                get_t_off = 0;
+            }
+        }
+
+        return brighter;
+    }
 
     if (nrfx_systick_test(&t_on, start))
     {
@@ -158,8 +194,43 @@ bool smooth_flashing_led(bool brighter, int led_idx)
     return brighter;
 }
 
-void init_systick_timer()
+void led_init_systick_timer()
 {
     nrfx_systick_init();
     nrfx_systick_get(&t_on);
+}
+
+static void led_can_be_toogle_timer_handler(void *p_context)
+{
+    ret_code_t err_code = 0;
+    led_can_be_toogle = 1;
+
+    err_code = app_timer_stop(led_can_be_toogle_tmr);
+    APP_ERROR_CHECK(err_code);
+}
+
+static void led_off_timer_handler(void *p_context)
+{
+    ret_code_t err_code = 0;
+    uint16_t *led_idx = (uint16_t *)p_context;
+
+    led_off_by_idx(*led_idx);
+    NRF_LOG_INFO("Led '%s' turn off", leds_idx_to_string_t[*led_idx].led_string);
+
+    err_code = app_timer_stop(led_off_tmr);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_start(led_can_be_toogle_tmr, LEDS_TIMEOUT_TOGGLE, NULL);
+    APP_ERROR_CHECK(err_code);
+}
+
+void led_init_timer()
+{
+    ret_code_t err_code = 0;
+
+    err_code = app_timer_create(&led_off_tmr, APP_TIMER_MODE_REPEATED, led_off_timer_handler);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_create(&led_can_be_toogle_tmr, APP_TIMER_MODE_REPEATED, led_can_be_toogle_timer_handler);
+    APP_ERROR_CHECK(err_code);
 }

@@ -24,7 +24,7 @@
 #include "nrfx_systick.h"
 #include "app_util_platform.h"
 
-#define TIMEOUT_PWM 500
+#define TIMEOUT_PWM 1000
 
 /** @brief Macro for mapping port and pin numbers to values understandable for nrf_gpio functions. */
 #define NRF_GPIO_PIN_MAP(port, pin) (((port) << 5) | ((pin) & 0x1F))
