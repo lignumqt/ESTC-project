@@ -13,6 +13,7 @@ $(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
 
 # Source files common to all targets
 SRC_FILES += \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_pwm.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/components/boards/boards.c \
@@ -66,6 +67,7 @@ SRC_FILES += \
   $(MODULES_DIR)/gpio/gpio.c \
   $(MODULES_DIR)/gpio/button.c \
   $(MODULES_DIR)/gpio/led.c \
+  $(MODULES_DIR)/gpio/pwm.c \
   $(PROJ_DIR)/main.c \
 
 # Include folders common to all targets

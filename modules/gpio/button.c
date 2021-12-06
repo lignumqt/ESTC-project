@@ -3,11 +3,13 @@
 #include "gpio.h"
 #include "button.h"
 #include "nrf_drv_gpiote.h"
+#include "pwm.h"
 
 static bool button_one_click = false;
 static bool was_double_click = false;
 
 APP_TIMER_DEF(check_double_click_tmr);
+APP_TIMER_DEF(button_double_click_control_pwm_tmr);
 
 bool button_get_was_double_click()
 {
@@ -42,6 +44,7 @@ static void button_if_double_click_check_cb(nrf_drv_gpiote_pin_t pin, nrf_gpiote
     {
         was_double_click = !was_double_click;
         button_one_click = false;
+        app_timer_start(button_double_click_control_pwm_tmr, APP_TIMER_TICKS(200), NULL);
         app_timer_stop(check_double_click_tmr);
     }
 }
@@ -67,7 +70,13 @@ static void button_single_press_reset(void *p_context)
     button_one_click = false;
 }
 
+static void button_double_click_control_pwm(void *p_context)
+{
+    pwm_main_control_phase_choice();
+}
+
 void button_timer_init()
 {
+    app_timer_create(&button_double_click_control_pwm_tmr, APP_TIMER_MODE_SINGLE_SHOT, button_double_click_control_pwm);
     app_timer_create(&check_double_click_tmr, APP_TIMER_MODE_SINGLE_SHOT, button_single_press_reset);
 }

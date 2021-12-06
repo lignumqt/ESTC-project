@@ -6,6 +6,7 @@
 #include "gpio.h"
 #include "led.h"
 #include "button.h"
+#include "pwm.h"
 
 #include "nrfx_systick.h"
 
@@ -33,11 +34,11 @@ int main(void)
     board_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS);
     init_all_timers();
     button_gpio_config_init();
+    //for first turn off
+    pwm_led_collor();
 
     while (true)
     {
-        led_toogle_smooth_by_seq();
-
         LOG_BACKEND_USB_PROCESS();
         NRF_LOG_PROCESS();
     }
